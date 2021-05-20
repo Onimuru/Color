@@ -1,6 +1,6 @@
 ﻿;==============  Include  ======================================================;
 
-#Include, %A_LineFile%\..\..\Core.ahk
+#Include %A_LineFile%\..\..\Core.ahk
 
 ;===============  Class  =======================================================;
 
@@ -148,16 +148,16 @@ Class Color {  ;: https://docs.microsoft.com/en-us/dotnet/api/system.windows.med
 
 	;* Color.ToHSL(rgb)
 	ToHSL(rgb) {
-		DllCall("Shlwapi\ColorRGBToHLS", "UInt", (rgb & 0xFF0000) >> 16 | rgb & 0xFF00 | (rgb & 0xFF) << 16, "UShort*", h := 0, "UShort*", l := 0, "UShort*", s := 0)
+		DllCall("Shlwapi\ColorRGBToHLS", "UInt", (rgb & 0xFF0000) >> 16 | rgb & 0xFF00 | (rgb & 0xFF) << 16, "UShort*", hue := 0, "UShort*", luminosity := 0, "UShort*", saturation := 0)  ;: https://docs.microsoft.com/en-us/windows/win32/api/shlwapi/nf-shlwapi-colorrgbtohls
 
-		return ([h*1.5, s/240, l/240])
+		return ([hue*1.5, luminosity/240, saturation/240])
 	}
 
-	;* Color.ToRGB(hue[, saturation, luminosity])
-	ToRGB(hue, saturation := 1.0, luminosity := .5) {
-		c := DllCall("Shlwapi\ColorHLSToRGB", "UShort", Math.Clamp(hue, 0, 1)*240, "UShort", Math.Clamp(luminosity, 0, 1)*240, "UShort", Math.Clamp(saturation, 0, 1)*240)
+	;* Color.ToRGB(hue[, luminosity, saturation])
+	ToRGB(hue, luminosity := 1, saturation := .5) {
+		c := DllCall("Shlwapi\ColorHLSToRGB", "UShort", hue*240, "UShort", Math.Clamp(saturation, 0, 1)*240, "UShort", Math.Clamp(saturation, 0, 1)*240)  ;: https://docs.microsoft.com/en-us/windows/win32/api/shlwapi/nf-shlwapi-colorhlstorgb
 
-		return (Format("{:#08X}", 255 << 24 | (c & 0xFF0000) >> 16 | c & 0xFF00 | (c & 0xFF) << 16))
+		return (Format("0x{:08X}", 255 << 24 | (c & 0xFF0000) >> 16 | c & 0xFF00 | (c & 0xFF) << 16))
 	}
 
 	;* Color.Random([alpha])
